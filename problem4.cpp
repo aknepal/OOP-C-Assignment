@@ -7,6 +7,9 @@ money, applying specific rules for each account type.
 */
 
 #include<iostream>
+#include<cstdlib>
+
+#define no_of_accounts 5
 
 using namespace std;
 
@@ -16,18 +19,31 @@ class Account{
         float balance;
 
     public:
-        virtual void depositMoney(float) = 0;
-        virtual void withdrawMoney(float) = 0;
+        Account(){
+            accountNumber = rand();
+        }
+
+        virtual void depositMoney() = 0;
+        virtual void withdrawMoney() = 0;
+
+        virtual ~Account(){}
 };
 
 class SavingsAccount : public Account{
     int withdrawalLimit = 6;
     float penalty = 0.01;
     public:
-        void depositMoney(float amount) override{
+        void depositMoney() override{
+            float amount;
+            cout << "Enter the amount to deposit to account number " << accountNumber << ": ";
+            cin >> amount;
             balance += amount;
         }
-        void withdrawMoney(float amount) override{
+
+        void withdrawMoney() override{
+            float amount;
+            cout << "Enter the amount to withdraw from account number " << accountNumber << ": " ;
+            cin >> amount;
             if (withdrawalLimit > 0){
                 if(balance > amount){
                     withdrawalLimit--;
@@ -45,15 +61,22 @@ class SavingsAccount : public Account{
                 }
             }
         }
+        
 };
 
 class CheckingAccount : public Account{
     float withdrawalLimit = 100000;
     public:
-        void depositMoney(float amount) override{
+        void depositMoney() override{
+            float amount;
+            cout << "Enter the amount to deposit from account number " << accountNumber << ": ";
+            cin >> amount;
             balance += amount;
         }
-        void withdrawMoney(float amount) override{
+        void withdrawMoney() override{
+            float amount;
+            cout << "Enter the amount to withdraw from account number " << accountNumber << ": ";
+            cin >> amount;
             if(amount > withdrawalLimit){
                 cout << "Sorry you cannot withdraw more than " << withdrawalLimit << " at once." << endl;
             } else {
@@ -66,3 +89,20 @@ class CheckingAccount : public Account{
         }
 };
 
+int main(){
+    Account *aPtr[no_of_accounts];
+    aPtr[0] = new SavingsAccount;
+    aPtr[1] = new SavingsAccount;
+    aPtr[2] = new CheckingAccount;
+    aPtr[3] = new CheckingAccount;
+    aPtr[4] = new CheckingAccount;
+
+    for(int i=0; i<no_of_accounts; i++)
+        aPtr[i]->depositMoney();
+
+    for(int i=0; i<no_of_accounts; i++)
+        aPtr[i]->withdrawMoney();
+
+    for(int i=0; i<no_of_accounts; i++)
+        delete aPtr[i];
+}
