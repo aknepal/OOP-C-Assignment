@@ -11,34 +11,58 @@ money, applying specific rules for each account type.
 using namespace std;
 
 class Account{
-    int accountNumber;
-    float balance;
+    protected:
+        int accountNumber;
+        float balance;
 
     public:
-        virtual void depositMoney() = 0;
-        virtual void withdrawMoney() = 0;
+        virtual void depositMoney(float) = 0;
+        virtual void withdrawMoney(float) = 0;
 };
 
 class SavingsAccount : public Account{
+    int withdrawalLimit = 6;
+    float penalty = 0.01;
     public:
-        void depositMoney() override{
-            cout << "deposit function called from within savings account";
+        void depositMoney(float amount) override{
+            balance += amount;
         }
-        void withdrawMoney() override{
-            cout << "withdraw function called from within savings account";
+        void withdrawMoney(float amount) override{
+            if (withdrawalLimit > 0){
+                if(balance > amount){
+                    withdrawalLimit--;
+                    balance -= amount;
+                } else {
+                    cout << "Insufficient Balance" << endl;
+                }
+            } else {
+                char ch;
+                cout << "You have reached your withdrawal limit. If you still wish to continue, 1%% penalty will be charged from you account. Do you wish to continue(y/n): ";
+                if(ch == 'y'){
+                    balance -= amount * (1 + penalty);
+                } else {
+                    cout << "Transaction cancelled!";
+                }
+            }
         }
 };
 
 class CheckingAccount : public Account{
+    float withdrawalLimit = 100000;
     public:
-        void depositMoney() override{
-            cout << "deposity function called from within checking account";
+        void depositMoney(float amount) override{
+            balance += amount;
         }
-        void withdrawMoney() override{
-            cout << "withdraw function called from within checking account";
+        void withdrawMoney(float amount) override{
+            if(amount > withdrawalLimit){
+                cout << "Sorry you cannot withdraw more than " << withdrawalLimit << " at once." << endl;
+            } else {
+                if(balance < amount){
+                    cout << "Insufficient Balance" << endl;
+                } else {
+                    balance -= amount;
+                }
+            }
         }
 };
 
-int main(){
-    
-}
